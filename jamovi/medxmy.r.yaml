@@ -1,0 +1,49 @@
+---
+name:  medxmy
+title: Mediation Analysis (X to M to Y)
+jrs:   '1.1'
+
+items:
+    - name:  text
+      title: Mediation Analysis (X to M to Y)
+      type:  Preformatted
+
+    - name:  mmodel
+      title: Predict M by X and covariates
+      type:  Table
+      rows: 1
+      columns:
+        - name: term
+          title: ""
+          type: text
+        - name: coef_ustd
+          title: "B"
+          type: number
+        - name: coef_std
+          title: "beta"
+          type: number
+        - name: p
+          title: "p-value"
+          type: number
+          format: pvalue
+
+    - name:  ymodel
+      title: Predict Y by M, X, and covariates
+      type:  Table
+      rows: 1
+      columns:
+        - name: term
+          title: ""
+          type: text
+        - name: coef_ustd
+          title: "B"
+          type: number
+        - name: coef_std
+          title: "beta"
+          type: number
+        - name: p
+          title: "p-value"
+          type: number
+          format: pvalue
+
+...

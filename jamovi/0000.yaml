@@ -1,7 +1,7 @@
 ---
 title: What the Package Does (Title Case)
 name: jmvmed
-version: 0.0.0
+version: 0.0.1
 jms: '1.0'
 authors:
   - Who wrote it
@@ -11,7 +11,12 @@ type: R
 description: >-
   More about what it does (maybe more than one line) Use four spaces when
   indenting paragraphs within the Description.
-analyses: []
+analyses:
+  - title: Mediation Analysis (X to M to Y)
+    name: medxmy
+    ns: jmvmed
+    menuGroup: jmvmed
+    menuTitle: Mediation Analysis (X to M to Y)
 usesNative: true
 minApp: 1.0.8
 

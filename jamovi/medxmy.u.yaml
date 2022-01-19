@@ -1,0 +1,55 @@
+title: Mediation Analysis (X to M to Y)
+name: medxmy
+jus: '3.0'
+stage: 0
+compilerMode: aggressive
+children:
+  - type: VariableSupplier
+    persistentItems: false
+    stretchFactor: 1
+    children:
+      - type: TargetLayoutBox
+        label: X
+        children:
+          - type: VariablesListBox
+            name: x
+            maxItemCount: 1
+            isTarget: true
+      - type: TargetLayoutBox
+        label: 'y'
+        children:
+          - type: VariablesListBox
+            name: 'y'
+            maxItemCount: 1
+            isTarget: true
+      - type: TargetLayoutBox
+        label: m
+        children:
+          - type: VariablesListBox
+            name: m
+            maxItemCount: 1
+            isTarget: true
+      - type: TargetLayoutBox
+        label: covariates
+        children:
+          - type: VariablesListBox
+            name: covariates
+            isTarget: true
+  - type: LayoutBox
+    margin: large
+    children:
+      - type: TextBox
+        name: R
+        format: number
+  - type: LayoutBox
+    margin: large
+    children:
+      - type: TextBox
+        name: conf
+        format: number
+  - type: LayoutBox
+    margin: large
+    children:
+      - type: TextBox
+        name: boot_seed
+        format: number
