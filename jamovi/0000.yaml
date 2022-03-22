@@ -1,16 +1,16 @@
 ---
-title: What the Package Does (Title Case)
+title: Nonparametric Bootstrapping Confidence Interval for a Simple Mediation Model
 name: jmvmed
-version: 0.0.1
+version: 0.1.0
 jms: '1.0'
 authors:
-  - Who wrote it
-maintainer: The package maintainer <yourself@somewhere.net>
-date: '1970-01-01'
+  - Shu Fai Cheung
+maintainer: Shu Fai Cheung <shufai.cheung@gmail.com>
+date: '2022-03-23'
 type: R
 description: >-
-  More about what it does (maybe more than one line) Use four spaces when
-  indenting paragraphs within the Description.
+  This module is merely for learning. It should not be used for serious
+  research.
 analyses:
   - title: Mediation Analysis (X to M to Y)
     name: medxmy

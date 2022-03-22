@@ -9,28 +9,28 @@ children:
     stretchFactor: 1
     children:
       - type: TargetLayoutBox
-        label: X
+        label: Y (Outcome)
         children:
           - type: VariablesListBox
-            name: x
+            name: 'Y'
             maxItemCount: 1
             isTarget: true
       - type: TargetLayoutBox
-        label: 'y'
+        label: X (Predictor)
         children:
           - type: VariablesListBox
-            name: 'y'
+            name: X
             maxItemCount: 1
             isTarget: true
       - type: TargetLayoutBox
-        label: m
+        label: M (Mediator)
         children:
           - type: VariablesListBox
-            name: m
+            name: M
             maxItemCount: 1
             isTarget: true
       - type: TargetLayoutBox
-        label: covariates
+        label: Covariates
         children:
           - type: VariablesListBox
             name: covariates

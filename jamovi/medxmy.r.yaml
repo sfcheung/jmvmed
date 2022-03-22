@@ -8,8 +8,20 @@ items:
       title: Mediation Analysis (X to M to Y)
       type:  Preformatted
 
+    - name:  basic
+      title: Analysis Information
+      type: Table
+      rows: 7
+      columns:
+        - name: term
+          title: "Item"
+          type: text
+        - name: data
+          title: "Content"
+          type: text
+
     - name:  mmodel
-      title: Predict M by X and covariates
+      title: Predict M by X and covariate(s)
       type:  Table
       rows: 1
       columns:
@@ -21,6 +33,12 @@ items:
           type: number
         - name: coef_std
           title: "beta"
+          type: number
+        - name: se
+          title: "S.E. (B)"
+          type: number
+        - name: t
+          title: "t"
           type: number
         - name: p
           title: "p-value"
@@ -28,7 +46,7 @@ items:
           format: pvalue
 
     - name:  ymodel
-      title: Predict Y by M, X, and covariates
+      title: Predict Y by M, X, and covariate(s)
       type:  Table
       rows: 1
       columns:
@@ -41,9 +59,94 @@ items:
         - name: coef_std
           title: "beta"
           type: number
+        - name: se
+          title: "S.E. (B)"
+          type: number
+        - name: t
+          title: "t"
+          type: number
         - name: p
           title: "p-value"
           type: number
           format: pvalue
+
+    - name:  rsq
+      title: Model R-squares
+      type:  Table
+      rows: 2
+      columns:
+        - name: model
+          title: ""
+          type: text
+        - name: rsq
+          title: "R-squared"
+          type: number
+        - name: adjrsq
+          title: "Adjusted R-squared"
+          type: number
+        - name: df1
+          title: "df1"
+          type: integer
+        - name: df2
+          title: "df2"
+          type: integer
+        - name: f
+          title: "F"
+          type: number
+        - name: p
+          title: "p-value"
+          type: number
+          format: pvalue
+
+
+
+    - name: indirect
+      title: Indirect Effect Estimates and Nonparametric Bootstrap Percentile Confidence Intervals
+      type: Table
+      rows: 2
+      columns:
+        - name: effect
+          title: ""
+          type: text
+        - name: est
+          title: "Estimate"
+          type: number
+        - name: lb
+          title: "Lower Limit"
+          type: number
+        - name: ub
+          title: "Upper Limit"
+          type: number
+        - name: lvl
+          title: "Level (%)"
+          type: number
+
+    - name: plotustd
+      title: Plot of Bootstrap Indirect Effect Estimates - Unstandardized
+      type: Image
+      width:  400
+      height: 400
+      renderFun: .plotustd
+
+    - name: qqustd
+      title: Normal QQ Plot of Bootstrap Indirect Effect Estimates - Unstandardized
+      type: Image
+      width: 400
+      height: 400
+      renderFun: .qqustd
+
+    - name: plotstd
+      title: Plot of Bootstrap Indirect Effect Estimates - Standardized
+      type: Image
+      width:  400
+      height: 400
+      renderFun: .plotstd
+
+    - name: qqstd
+      title: Normal QQ Plot of Bootstrap Indirect Effect Estimates - Standardized
+      type: Image
+      width: 400
+      height: 400
+      renderFun: .qqstd
 
 ...

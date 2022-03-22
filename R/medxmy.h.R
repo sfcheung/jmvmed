@@ -6,13 +6,13 @@ medxmyOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
     inherit = jmvcore::Options,
     public = list(
         initialize = function(
-            x = NULL,
-            y = NULL,
-            m = NULL,
+            Y = NULL,
+            X = NULL,
+            M = NULL,
             covariates = NULL,
             R = 500,
-            conf = 0.95,
-            boot_seed = NULL, ...) {
+            conf = 95,
+            boot_seed = 1234, ...) {
 
             super$initialize(
                 package="jmvmed",
@@ -20,15 +20,15 @@ medxmyOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 requiresData=TRUE,
                 ...)
 
-            private$..x <- jmvcore::OptionVariable$new(
-                "x",
-                x)
-            private$..y <- jmvcore::OptionVariable$new(
-                "y",
-                y)
-            private$..m <- jmvcore::OptionVariable$new(
-                "m",
-                m)
+            private$..Y <- jmvcore::OptionVariable$new(
+                "Y",
+                Y)
+            private$..X <- jmvcore::OptionVariable$new(
+                "X",
+                X)
+            private$..M <- jmvcore::OptionVariable$new(
+                "M",
+                M)
             private$..covariates <- jmvcore::OptionVariables$new(
                 "covariates",
                 covariates)
@@ -40,33 +40,34 @@ medxmyOptions <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             private$..conf <- jmvcore::OptionNumber$new(
                 "conf",
                 conf,
-                default=0.95,
-                min=0.5001,
-                max=0.9999)
+                default=95,
+                min=50.01,
+                max=99.99)
             private$..boot_seed <- jmvcore::OptionInteger$new(
                 "boot_seed",
-                boot_seed)
+                boot_seed,
+                default=1234)
 
-            self$.addOption(private$..x)
-            self$.addOption(private$..y)
-            self$.addOption(private$..m)
+            self$.addOption(private$..Y)
+            self$.addOption(private$..X)
+            self$.addOption(private$..M)
             self$.addOption(private$..covariates)
             self$.addOption(private$..R)
             self$.addOption(private$..conf)
             self$.addOption(private$..boot_seed)
         }),
     active = list(
-        x = function() private$..x$value,
-        y = function() private$..y$value,
-        m = function() private$..m$value,
+        Y = function() private$..Y$value,
+        X = function() private$..X$value,
+        M = function() private$..M$value,
         covariates = function() private$..covariates$value,
         R = function() private$..R$value,
         conf = function() private$..conf$value,
         boot_seed = function() private$..boot_seed$value),
     private = list(
-        ..x = NA,
-        ..y = NA,
-        ..m = NA,
+        ..Y = NA,
+        ..X = NA,
+        ..M = NA,
         ..covariates = NA,
         ..R = NA,
         ..conf = NA,
@@ -78,8 +79,15 @@ medxmyResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
     inherit = jmvcore::Group,
     active = list(
         text = function() private$.items[["text"]],
+        basic = function() private$.items[["basic"]],
         mmodel = function() private$.items[["mmodel"]],
-        ymodel = function() private$.items[["ymodel"]]),
+        ymodel = function() private$.items[["ymodel"]],
+        rsq = function() private$.items[["rsq"]],
+        indirect = function() private$.items[["indirect"]],
+        plotustd = function() private$.items[["plotustd"]],
+        qqustd = function() private$.items[["qqustd"]],
+        plotstd = function() private$.items[["plotstd"]],
+        qqstd = function() private$.items[["qqstd"]]),
     private = list(),
     public=list(
         initialize=function(options) {
@@ -93,8 +101,22 @@ medxmyResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                 title="Mediation Analysis (X to M to Y)"))
             self$add(jmvcore::Table$new(
                 options=options,
+                name="basic",
+                title="Analysis Information",
+                rows=7,
+                columns=list(
+                    list(
+                        `name`="term", 
+                        `title`="Item", 
+                        `type`="text"),
+                    list(
+                        `name`="data", 
+                        `title`="Content", 
+                        `type`="text"))))
+            self$add(jmvcore::Table$new(
+                options=options,
                 name="mmodel",
-                title="Predict M by X and covariates",
+                title="Predict M by X and covariate(s)",
                 rows=1,
                 columns=list(
                     list(
@@ -108,6 +130,14 @@ medxmyResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                     list(
                         `name`="coef_std", 
                         `title`="beta", 
+                        `type`="number"),
+                    list(
+                        `name`="se", 
+                        `title`="S.E. (B)", 
+                        `type`="number"),
+                    list(
+                        `name`="t", 
+                        `title`="t", 
                         `type`="number"),
                     list(
                         `name`="p", 
@@ -117,7 +147,7 @@ medxmyResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
             self$add(jmvcore::Table$new(
                 options=options,
                 name="ymodel",
-                title="Predict Y by M, X, and covariates",
+                title="Predict Y by M, X, and covariate(s)",
                 rows=1,
                 columns=list(
                     list(
@@ -133,10 +163,107 @@ medxmyResults <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
                         `title`="beta", 
                         `type`="number"),
                     list(
+                        `name`="se", 
+                        `title`="S.E. (B)", 
+                        `type`="number"),
+                    list(
+                        `name`="t", 
+                        `title`="t", 
+                        `type`="number"),
+                    list(
                         `name`="p", 
                         `title`="p-value", 
                         `type`="number", 
-                        `format`="pvalue"))))}))
+                        `format`="pvalue"))))
+            self$add(jmvcore::Table$new(
+                options=options,
+                name="rsq",
+                title="Model R-squares",
+                rows=2,
+                columns=list(
+                    list(
+                        `name`="model", 
+                        `title`="", 
+                        `type`="text"),
+                    list(
+                        `name`="rsq", 
+                        `title`="R-squared", 
+                        `type`="number"),
+                    list(
+                        `name`="adjrsq", 
+                        `title`="Adjusted R-squared", 
+                        `type`="number"),
+                    list(
+                        `name`="df1", 
+                        `title`="df1", 
+                        `type`="integer"),
+                    list(
+                        `name`="df2", 
+                        `title`="df2", 
+                        `type`="integer"),
+                    list(
+                        `name`="f", 
+                        `title`="F", 
+                        `type`="number"),
+                    list(
+                        `name`="p", 
+                        `title`="p-value", 
+                        `type`="number", 
+                        `format`="pvalue"))))
+            self$add(jmvcore::Table$new(
+                options=options,
+                name="indirect",
+                title="Indirect Effect Estimates and Nonparametric Bootstrap Percentile Confidence Intervals",
+                rows=2,
+                columns=list(
+                    list(
+                        `name`="effect", 
+                        `title`="", 
+                        `type`="text"),
+                    list(
+                        `name`="est", 
+                        `title`="Estimate", 
+                        `type`="number"),
+                    list(
+                        `name`="lb", 
+                        `title`="Lower Limit", 
+                        `type`="number"),
+                    list(
+                        `name`="ub", 
+                        `title`="Upper Limit", 
+                        `type`="number"),
+                    list(
+                        `name`="lvl", 
+                        `title`="Level (%)", 
+                        `type`="number"))))
+            self$add(jmvcore::Image$new(
+                options=options,
+                name="plotustd",
+                title="Plot of Bootstrap Indirect Effect Estimates - Unstandardized",
+                width=400,
+                height=400,
+                renderFun=".plotustd"))
+            self$add(jmvcore::Image$new(
+                options=options,
+                name="qqustd",
+                title="Normal QQ Plot of Bootstrap Indirect Effect Estimates - Unstandardized",
+                width=400,
+                height=400,
+                renderFun=".qqustd"))
+            self$add(jmvcore::Image$new(
+                options=options,
+                name="plotstd",
+                title="Plot of Bootstrap Indirect Effect Estimates - Standardized",
+                width=400,
+                height=400,
+                renderFun=".plotstd"))
+            self$add(jmvcore::Image$new(
+                options=options,
+                name="qqstd",
+                title="Normal QQ Plot of Bootstrap Indirect Effect Estimates - Standardized",
+                width=400,
+                height=400,
+                renderFun=".qqstd"))}))
 
 medxmyBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
     "medxmyBase",
@@ -162,9 +289,9 @@ medxmyBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #'
 #' 
 #' @param data .
-#' @param x .
-#' @param y .
-#' @param m .
+#' @param Y .
+#' @param X .
+#' @param M .
 #' @param covariates .
 #' @param R .
 #' @param conf .
@@ -172,47 +299,54 @@ medxmyBase <- if (requireNamespace("jmvcore", quietly=TRUE)) R6::R6Class(
 #' @return A results object containing:
 #' \tabular{llllll}{
 #'   \code{results$text} \tab \tab \tab \tab \tab a preformatted \cr
+#'   \code{results$basic} \tab \tab \tab \tab \tab a table \cr
 #'   \code{results$mmodel} \tab \tab \tab \tab \tab a table \cr
 #'   \code{results$ymodel} \tab \tab \tab \tab \tab a table \cr
+#'   \code{results$rsq} \tab \tab \tab \tab \tab a table \cr
+#'   \code{results$indirect} \tab \tab \tab \tab \tab a table \cr
+#'   \code{results$plotustd} \tab \tab \tab \tab \tab an image \cr
+#'   \code{results$qqustd} \tab \tab \tab \tab \tab an image \cr
+#'   \code{results$plotstd} \tab \tab \tab \tab \tab an image \cr
+#'   \code{results$qqstd} \tab \tab \tab \tab \tab an image \cr
 #' }
 #'
 #' Tables can be converted to data frames with \code{asDF} or \code{\link{as.data.frame}}. For example:
 #'
-#' \code{results$mmodel$asDF}
+#' \code{results$basic$asDF}
 #'
-#' \code{as.data.frame(results$mmodel)}
+#' \code{as.data.frame(results$basic)}
 #'
 #' @export
 medxmy <- function(
     data,
-    x,
-    y,
-    m,
+    Y,
+    X,
+    M,
     covariates,
     R = 500,
-    conf = 0.95,
-    boot_seed) {
+    conf = 95,
+    boot_seed = 1234) {
 
     if ( ! requireNamespace("jmvcore", quietly=TRUE))
         stop("medxmy requires jmvcore to be installed (restart may be required)")
 
-    if ( ! missing(x)) x <- jmvcore::resolveQuo(jmvcore::enquo(x))
-    if ( ! missing(y)) y <- jmvcore::resolveQuo(jmvcore::enquo(y))
-    if ( ! missing(m)) m <- jmvcore::resolveQuo(jmvcore::enquo(m))
+    if ( ! missing(Y)) Y <- jmvcore::resolveQuo(jmvcore::enquo(Y))
+    if ( ! missing(X)) X <- jmvcore::resolveQuo(jmvcore::enquo(X))
+    if ( ! missing(M)) M <- jmvcore::resolveQuo(jmvcore::enquo(M))
     if ( ! missing(covariates)) covariates <- jmvcore::resolveQuo(jmvcore::enquo(covariates))
     if (missing(data))
         data <- jmvcore::marshalData(
             parent.frame(),
-            `if`( ! missing(x), x, NULL),
-            `if`( ! missing(y), y, NULL),
-            `if`( ! missing(m), m, NULL),
+            `if`( ! missing(Y), Y, NULL),
+            `if`( ! missing(X), X, NULL),
+            `if`( ! missing(M), M, NULL),
             `if`( ! missing(covariates), covariates, NULL))
 
 
     options <- medxmyOptions$new(
-        x = x,
-        y = y,
-        m = m,
+        Y = Y,
+        X = X,
+        M = M,
         covariates = covariates,
         R = R,
         conf = conf,

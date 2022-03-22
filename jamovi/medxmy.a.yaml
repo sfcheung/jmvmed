@@ -9,20 +9,20 @@ options:
     - name: data
       type: Data
 
-    - name: x
-      title: X
+    - name: Y
+      title: Y (Outcome)
       type: Variable
 
-    - name: y
-      title: y
+    - name: X
+      title: X (Predictor)
       type: Variable
 
-    - name: m
-      title: m
+    - name: M
+      title: M (Mediator)
       type: Variable
 
     - name: covariates
-      title: covariates
+      title: Covariates
       type: Variables
 
     - name: R
@@ -32,14 +32,15 @@ options:
       min: 100
 
     - name: conf
-      title: Level of Confidence
+      title: Level of Confidence (%)
       type: Number
-      default: .95
-      min: .5001
-      max: .9999
+      default: 95
+      min: 50.01
+      max: 99.99
 
     - name: boot_seed
       title: Seed for Random Sampling
       type: Integer
+      default: 1234
 
 ...
